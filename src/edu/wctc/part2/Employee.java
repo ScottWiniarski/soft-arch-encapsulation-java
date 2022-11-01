@@ -8,18 +8,18 @@ import java.time.format.DateTimeFormatter;
 /**
  * In this lab focus on METHOD encapsulation and fix/add code as necessary.
  * Pay special attention to the following issues:
- *
+ * <p>
  * 1. Not all methods need to be public
- *
+ * <p>
  * 2. When methods need to be called in a certain order you can do this
  * by creating a parent method that calls the other, helper methods.
- *
+ * <p>
  * 3. There is some duplicate code used that violates the D.R.Y. principle.
  * Eliminate that by encapsulating the duplicate code in a new method
  * and then call that method in place of the duplicate code.
- *
+ * <p>
  * 4. All method parameters should be validated (except booleans).
- *
+ * <p>
  * Review the tips in the document Encapsulation Checklist if needed.
  */
 public class Employee {
@@ -33,30 +33,45 @@ public class Employee {
     private String cubeId;
     private LocalDate orientationDate;
 
+    public static final int SSN_LENGTH = 14;
+
     public Employee(String firstName, String lastName, String ssn) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.ssn = ssn;
+        setFirstName(firstName);
+        setLastName(lastName);
+        setSsn(ssn);
+        //this.firstName = firstName;
+        //this.lastName = lastName;
+        //this.ssn = ssn;
     }
+
+    public void inOrder() {
+        meetWithHrForBenefitAndSalaryInfo();
+        meetDepartmentStaff();
+        reviewDeptPolicies();
+        moveIntoCubicle(cubeId);
+    }
+
+    private String formatter() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy");
+        return formatter.format(orientationDate);
+    }
+
 
     // Assume this must be performed first, and assume that an employee
     // would only do this once, upon being hired.
-    public void meetWithHrForBenefitAndSalaryInfo() {
+    private void meetWithHrForBenefitAndSalaryInfo() {
         metWithHr = true;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy");
-        String fmtDate = formatter.format(orientationDate);
+        //String fmtDate =  formatter();
         System.out.println(firstName + " " + lastName + " met with HR on "
-                + fmtDate);
+                + formatter());
     }
 
     // Assume this must be performed second, and assume that an employee
     // would only do this once, upon being hired.
-    public void meetDepartmentStaff() {
+    private void meetDepartmentStaff() {
         metDeptStaff = true;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy");
-        String fmtDate = formatter.format(orientationDate);
         System.out.println(firstName + " " + lastName + " met with dept staff on "
-                + fmtDate);
+                + formatter());
     }
 
     // Assume this must be performed third. And assume that because department
@@ -64,22 +79,18 @@ public class Employee {
     // independently from other classes.
     public void reviewDeptPolicies() {
         reviewedDeptPolicies = true;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy");
-        String fmtDate = formatter.format(orientationDate);
         System.out.println(firstName + " " + lastName + " reviewed dept policies on "
-                + fmtDate);
+                + formatter());
     }
 
     // Assume this must be performed fourth. And assume that because employees
     // sometimes change office locations that this method may need to be called 
     // independently from other classes.
     public void moveIntoCubicle(String cubeId) {
-        this.cubeId = cubeId;
+        this.cubeId = getCubeId();
         this.movedIn = true;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy");
-        String fmtDate = formatter.format(orientationDate);
         System.out.println(firstName + " " + lastName + " moved into cubicle "
-                + cubeId + " on " + fmtDate);
+                + cubeId + " on " + formatter());
     }
 
     public String getFirstName() {
@@ -90,6 +101,9 @@ public class Employee {
     // allowed through validation.
 
     public void setFirstName(String firstName) {
+        if (firstName == null || firstName.isBlank()) {
+            throw new IllegalArgumentException();
+        }
         this.firstName = firstName;
     }
 
@@ -98,6 +112,9 @@ public class Employee {
     }
 
     public void setLastName(String lastName) {
+        if (lastName == null || lastName.isBlank()) {
+            throw new IllegalArgumentException();
+        }
         this.lastName = lastName;
     }
 
@@ -106,7 +123,10 @@ public class Employee {
     }
 
     public void setSsn(String ssn) {
-        this.ssn = ssn;
+        if (ssn.length() != SSN_LENGTH){
+            throw new IllegalArgumentException();
+        }
+            this.ssn = ssn;
     }
 
     public boolean hasMetWithHr() {
@@ -130,6 +150,9 @@ public class Employee {
     }
 
     public void setCubeId(String cubeId) {
+        if (cubeId == null) {
+            throw new IllegalArgumentException();
+        }
         this.cubeId = cubeId;
     }
 
